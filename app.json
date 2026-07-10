@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.kirassan.wishlistapp"
     },
     "web": {
       "output": "static",
@@ -38,11 +39,25 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Wishlist to access your photos so you can attach an image to a wish.",
+          "microphonePermission": false,
+          "cameraPermission": false
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "fca9f7b6-6244-49c5-845b-1c44634959b9"
+      }
     }
   }
 }

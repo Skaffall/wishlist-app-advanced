@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { Modal, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { colors } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 import type { WishItem } from "@/src/types/wish";
 
 interface CompletedActionSheetProps {
@@ -18,6 +19,9 @@ export function CompletedActionSheet({
   onRestore,
   onDelete,
 }: CompletedActionSheetProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <Modal
       visible={Boolean(wish)}
@@ -84,55 +88,56 @@ export function CompletedActionSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: colors.overlay,
-    justifyContent: "flex-end",
-  },
-  sheetWrapper: {
-    paddingHorizontal: 12,
-    paddingBottom: 8,
-  },
-  sheet: {
-    backgroundColor: colors.card,
-    borderRadius: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    gap: 4,
-  },
-  title: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: colors.textMuted,
-    textAlign: "center",
-    paddingVertical: 10,
-  },
-  option: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    minHeight: 50,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-  },
-  optionText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  destructiveText: {
-    color: colors.danger,
-  },
-  cancelOption: {
-    minHeight: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 4,
-  },
-  cancelText: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: colors.textMuted,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    overlay: {
+      flex: 1,
+      backgroundColor: colors.overlay,
+      justifyContent: "flex-end",
+    },
+    sheetWrapper: {
+      paddingHorizontal: 12,
+      paddingBottom: 8,
+    },
+    sheet: {
+      backgroundColor: colors.card,
+      borderRadius: 20,
+      paddingVertical: 8,
+      paddingHorizontal: 8,
+      gap: 4,
+    },
+    title: {
+      fontSize: 13,
+      fontWeight: "600",
+      color: colors.textMuted,
+      textAlign: "center",
+      paddingVertical: 10,
+    },
+    option: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+      minHeight: 50,
+      paddingHorizontal: 14,
+      borderRadius: 12,
+    },
+    optionText: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors.text,
+    },
+    destructiveText: {
+      color: colors.danger,
+    },
+    cancelOption: {
+      minHeight: 50,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 4,
+    },
+    cancelText: {
+      fontSize: 16,
+      fontWeight: "700",
+      color: colors.textMuted,
+    },
+  });

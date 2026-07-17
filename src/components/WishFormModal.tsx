@@ -15,7 +15,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ImagePickerField } from "@/src/components/ImagePickerField";
 import { PrioritySelector } from "@/src/components/PrioritySelector";
-import { colors } from "@/src/constants/theme";
+import { ProgressBar } from "@/src/components/ProgressBar";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 import type { Priority, WishInput, WishItem } from "@/src/types/wish";
 
 interface WishFormModalProps {
@@ -33,6 +35,7 @@ interface FormState {
   link: string;
   priority: Priority;
   notes: string;
+  progress: string;
 }
 
 const EMPTY_FORM: FormState = {
@@ -42,7 +45,13 @@ const EMPTY_FORM: FormState = {
   link: "",
   priority: "Medium",
   notes: "",
+  progress: "0",
 };
+
+function clampProgress(value: string): number {
+  const numeric = Math.round(Number(value.replace(/[^0-9]/g, "")) || 0);
+  return Math.max(0, Math.min(100, numeric));
+}
 
 export function WishFormModal({
   visible,
@@ -51,6 +60,8 @@ export function WishFormModal({
   onSubmit,
   onDelete,
 }: WishFormModalProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const isEditMode = Boolean(wish);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [titleError, setTitleError] = useState(false);
@@ -66,6 +77,7 @@ export function WishFormModal({
         link: wish.link ?? "",
         priority: wish.priority,
         notes: wish.notes ?? "",
+        progress: String(wish.progress ?? 0),
       });
     } else {
       setForm(EMPTY_FORM);
@@ -74,6 +86,12 @@ export function WishFormModal({
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const progressValue = clampProgress(form.progress);
+
+  const adjustProgress = (delta: number) => {
+    updateField("progress", String(clampProgress(String(progressValue + delta))));
   };
 
   const handleSubmit = () => {
@@ -89,6 +107,7 @@ export function WishFormModal({
       link: form.link.trim() || undefined,
       priority: form.priority,
       notes: form.notes.trim() || undefined,
+      progress: progressValue,
     });
     onClose();
   };
@@ -200,6 +219,42 @@ export function WishFormModal({
             </View>
 
             <View style={styles.field}>
+              <Text style={styles.label}>Progress</Text>
+              <View style={styles.progressRow}>
+                <Pressable
+                  onPress={() => adjustProgress(-10)}
+                  hitSlop={8}
+                  style={styles.stepButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Decrease progress"
+                >
+                  <Text style={styles.stepButtonText}>−</Text>
+                </Pressable>
+                <TextInput
+                  value={form.progress}
+                  onChangeText={(text) => updateField("progress", text)}
+                  onBlur={() =>
+                    updateField("progress", String(clampProgress(form.progress)))
+                  }
+                  keyboardType="number-pad"
+                  maxLength={3}
+                  style={styles.progressInput}
+                />
+                <Text style={styles.percentSign}>%</Text>
+                <Pressable
+                  onPress={() => adjustProgress(10)}
+                  hitSlop={8}
+                  style={styles.stepButton}
+                  accessibilityRole="button"
+                  accessibilityLabel="Increase progress"
+                >
+                  <Text style={styles.stepButtonText}>+</Text>
+                </Pressable>
+              </View>
+              <ProgressBar progress={progressValue} showLabel={false} />
+            </View>
+
+            <View style={styles.field}>
               <Text style={styles.label}>Notes</Text>
               <TextInput
                 value={form.notes}
@@ -247,104 +302,142 @@ export function WishFormModal({
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  flex: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    fontSize: 17,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  headerSpacer: {
-    width: 50,
-  },
-  cancelText: {
-    fontSize: 16,
-    color: colors.textMuted,
-  },
-  content: {
-    padding: 20,
-    gap: 18,
-  },
-  imageRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 4,
-  },
-  field: {
-    gap: 8,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.text,
-  },
-  input: {
-    minHeight: 44,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: colors.text,
-    backgroundColor: colors.card,
-  },
-  inputError: {
-    borderColor: colors.danger,
-  },
-  errorText: {
-    color: colors.danger,
-    fontSize: 13,
-  },
-  notesInput: {
-    minHeight: 90,
-    textAlignVertical: "top",
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  footerRow: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  button: {
-    flex: 1,
-    minHeight: 48,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButton: {
-    backgroundColor: colors.accent,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  deleteButton: {
-    backgroundColor: colors.dangerSoft,
-  },
-  deleteButtonText: {
-    color: colors.danger,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    flex: {
+      flex: 1,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    headerTitle: {
+      fontSize: 17,
+      fontWeight: "700",
+      color: colors.text,
+    },
+    headerSpacer: {
+      width: 50,
+    },
+    cancelText: {
+      fontSize: 16,
+      color: colors.textMuted,
+    },
+    content: {
+      padding: 20,
+      gap: 18,
+    },
+    imageRow: {
+      flexDirection: "row",
+      justifyContent: "center",
+      marginBottom: 4,
+    },
+    field: {
+      gap: 8,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: colors.text,
+    },
+    input: {
+      minHeight: 44,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.text,
+      backgroundColor: colors.card,
+    },
+    inputError: {
+      borderColor: colors.danger,
+    },
+    errorText: {
+      color: colors.danger,
+      fontSize: 13,
+    },
+    notesInput: {
+      minHeight: 90,
+      textAlignVertical: "top",
+    },
+    progressRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 10,
+    },
+    stepButton: {
+      width: 36,
+      height: 36,
+      borderRadius: 10,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.card,
+    },
+    stepButtonText: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: colors.text,
+    },
+    progressInput: {
+      minHeight: 40,
+      minWidth: 56,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      borderRadius: 10,
+      paddingHorizontal: 10,
+      fontSize: 15,
+      color: colors.text,
+      backgroundColor: colors.card,
+      textAlign: "center",
+    },
+    percentSign: {
+      fontSize: 15,
+      fontWeight: "600",
+      color: colors.textMuted,
+    },
+    footer: {
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    footerRow: {
+      flexDirection: "row",
+      gap: 12,
+    },
+    button: {
+      flex: 1,
+      minHeight: 48,
+      borderRadius: 14,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    primaryButton: {
+      backgroundColor: colors.accent,
+    },
+    primaryButtonText: {
+      color: "#fff",
+      fontSize: 16,
+      fontWeight: "700",
+    },
+    deleteButton: {
+      backgroundColor: colors.dangerSoft,
+    },
+    deleteButtonText: {
+      color: colors.danger,
+      fontSize: 16,
+      fontWeight: "700",
+    },
+  });

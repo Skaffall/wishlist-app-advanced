@@ -6,11 +6,14 @@ import { EmptyState } from "@/src/components/EmptyState";
 import { FAB } from "@/src/components/FAB";
 import { WishFormModal } from "@/src/components/WishFormModal";
 import { WishListItem } from "@/src/components/WishListItem";
-import { colors } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 import { useWishlist } from "@/src/store/wishlist-context";
 import type { WishInput, WishItem } from "@/src/types/wish";
 
 export default function WishlistScreen() {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const { activeItems, addWish, updateWish, deleteWish, toggleComplete } =
     useWishlist();
   const [modalVisible, setModalVisible] = useState(false);
@@ -79,23 +82,24 @@ export default function WishlistScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 8,
-    paddingBottom: 12,
-  },
-  headerTitle: {
-    fontSize: 30,
-    fontWeight: "800",
-    color: colors.text,
-  },
-  list: {
-    paddingHorizontal: 16,
-    paddingBottom: 100,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      paddingHorizontal: 20,
+      paddingTop: 8,
+      paddingBottom: 12,
+    },
+    headerTitle: {
+      fontSize: 30,
+      fontWeight: "800",
+      color: colors.text,
+    },
+    list: {
+      paddingHorizontal: 16,
+      paddingBottom: 100,
+    },
+  });

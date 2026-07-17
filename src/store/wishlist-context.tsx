@@ -24,6 +24,8 @@ interface WishlistContextValue {
   deleteWish: (id: string) => void;
   toggleComplete: (id: string) => void;
   restoreWish: (id: string) => void;
+  clearCompleted: () => void;
+  deleteAll: () => void;
 }
 
 const WishlistContext = createContext<WishlistContextValue | undefined>(
@@ -60,7 +62,7 @@ export function WishlistProvider({ children }: PropsWithChildren) {
     const newWish: WishItem = {
       ...input,
       id: Crypto.randomUUID(),
-      isCompleted: false,
+      isCompleted: (input.progress ?? 0) >= 100,
       createdAt: new Date().toISOString(),
     };
     setItems((prev) => [newWish, ...prev]);
@@ -68,7 +70,15 @@ export function WishlistProvider({ children }: PropsWithChildren) {
 
   const updateWish = useCallback((id: string, input: WishInput) => {
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...input } : item)),
+      prev.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              ...input,
+              isCompleted: (input.progress ?? 0) >= 100 || item.isCompleted,
+            }
+          : item,
+      ),
     );
   }, []);
 
@@ -92,6 +102,14 @@ export function WishlistProvider({ children }: PropsWithChildren) {
     );
   }, []);
 
+  const clearCompleted = useCallback(() => {
+    setItems((prev) => prev.filter((item) => !item.isCompleted));
+  }, []);
+
+  const deleteAll = useCallback(() => {
+    setItems([]);
+  }, []);
+
   const activeItems = useMemo(
     () => items.filter((item) => !item.isCompleted),
     [items],
@@ -112,6 +130,8 @@ export function WishlistProvider({ children }: PropsWithChildren) {
       deleteWish,
       toggleComplete,
       restoreWish,
+      clearCompleted,
+      deleteAll,
     }),
     [
       items,
@@ -123,6 +143,8 @@ export function WishlistProvider({ children }: PropsWithChildren) {
       deleteWish,
       toggleComplete,
       restoreWish,
+      clearCompleted,
+      deleteAll,
     ],
   );
 

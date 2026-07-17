@@ -8,6 +8,7 @@ export interface WishItem {
   link?: string;
   priority: Priority;
   notes?: string;
+  progress?: number;
   isCompleted: boolean;
   createdAt: string;
 }

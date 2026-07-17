@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
-import { colors } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 
 interface RadioCheckboxProps {
   checked: boolean;
@@ -18,6 +19,8 @@ interface RadioCheckboxProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function RadioCheckbox({ checked, onToggle }: RadioCheckboxProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const scale = useSharedValue(1);
 
   useEffect(() => {
@@ -45,19 +48,20 @@ export function RadioCheckbox({ checked, onToggle }: RadioCheckboxProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  circle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    borderColor: colors.border,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colors.card,
-  },
-  circleChecked: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    circle: {
+      width: 28,
+      height: 28,
+      borderRadius: 14,
+      borderWidth: 2,
+      borderColor: colors.border,
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: colors.card,
+    },
+    circleChecked: {
+      backgroundColor: colors.accent,
+      borderColor: colors.accent,
+    },
+  });

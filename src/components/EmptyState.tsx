@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
 
-import { colors } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 
 interface EmptyStateProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -10,6 +11,9 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   return (
     <View style={styles.container}>
       <View style={styles.iconCircle}>
@@ -21,31 +25,32 @@ export function EmptyState({ icon, title, subtitle }: EmptyStateProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 32,
-    gap: 8,
-  },
-  iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: colors.accentSoft,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  subtitle: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: "center",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 32,
+      gap: 8,
+    },
+    iconCircle: {
+      width: 72,
+      height: 72,
+      borderRadius: 36,
+      backgroundColor: colors.accentSoft,
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 8,
+    },
+    title: {
+      fontSize: 18,
+      fontWeight: "700",
+      color: colors.text,
+    },
+    subtitle: {
+      fontSize: 14,
+      color: colors.textMuted,
+      textAlign: "center",
+    },
+  });

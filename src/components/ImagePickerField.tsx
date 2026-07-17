@@ -2,7 +2,8 @@ import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { Alert, Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { colors } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 
 interface ImagePickerFieldProps {
   imageUri?: string;
@@ -10,6 +11,9 @@ interface ImagePickerFieldProps {
 }
 
 export function ImagePickerField({ imageUri, onChange }: ImagePickerFieldProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
+
   const pickImage = async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!permission.granted) {
@@ -59,44 +63,45 @@ export function ImagePickerField({ imageUri, onChange }: ImagePickerFieldProps) 
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    width: 96,
-    height: 96,
-    borderRadius: 16,
-    overflow: "visible",
-  },
-  image: {
-    width: 96,
-    height: 96,
-    borderRadius: 16,
-  },
-  placeholder: {
-    width: 96,
-    height: 96,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: colors.border,
-    borderStyle: "dashed",
-    backgroundColor: colors.accentSoft,
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 4,
-  },
-  placeholderText: {
-    fontSize: 12,
-    color: colors.textMuted,
-    fontWeight: "500",
-  },
-  removeButton: {
-    position: "absolute",
-    top: -6,
-    right: -6,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    backgroundColor: colors.danger,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      width: 96,
+      height: 96,
+      borderRadius: 16,
+      overflow: "visible",
+    },
+    image: {
+      width: 96,
+      height: 96,
+      borderRadius: 16,
+    },
+    placeholder: {
+      width: 96,
+      height: 96,
+      borderRadius: 16,
+      borderWidth: 1.5,
+      borderColor: colors.border,
+      borderStyle: "dashed",
+      backgroundColor: colors.accentSoft,
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 4,
+    },
+    placeholderText: {
+      fontSize: 12,
+      color: colors.textMuted,
+      fontWeight: "500",
+    },
+    removeButton: {
+      position: "absolute",
+      top: -6,
+      right: -6,
+      width: 22,
+      height: 22,
+      borderRadius: 11,
+      backgroundColor: colors.danger,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+  });

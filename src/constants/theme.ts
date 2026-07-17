@@ -1,16 +1,34 @@
-export const colors = {
-  background: "#F7F7FB",
-  card: "#FFFFFF",
-  border: "#ECECF3",
-  text: "#1C1C28",
-  textMuted: "#8A8A9C",
-  accent: "#6C5CE7",
-  accentSoft: "#EFEBFC",
-  danger: "#E74C3C",
-  dangerSoft: "#FDECEA",
-  success: "#2ECC71",
-  overlay: "rgba(20, 20, 30, 0.4)",
+export const palette = {
+  light: {
+    background: "#F7F7FB",
+    card: "#FFFFFF",
+    border: "#ECECF3",
+    text: "#1C1C28",
+    textMuted: "#8A8A9C",
+    accent: "#6C5CE7",
+    accentSoft: "#EFEBFC",
+    danger: "#E74C3C",
+    dangerSoft: "#FDECEA",
+    success: "#2ECC71",
+    overlay: "rgba(20, 20, 30, 0.4)",
+  },
+  dark: {
+    background: "#0F0F16",
+    card: "#1B1B26",
+    border: "#2C2C3A",
+    text: "#F2F2F7",
+    textMuted: "#93939F",
+    accent: "#8C7CF7",
+    accentSoft: "#2A2440",
+    danger: "#FF6B60",
+    dangerSoft: "#3A2222",
+    success: "#3EDC84",
+    overlay: "rgba(0, 0, 0, 0.6)",
+  },
 } as const;
+
+export type ThemeScheme = keyof typeof palette;
+export type ThemeColors = (typeof palette)[ThemeScheme];
 
 export const priorityColors: Record<"Low" | "Medium" | "High", string> = {
   Low: "#2ECC71",

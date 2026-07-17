@@ -7,8 +7,11 @@ import Animated, {
   LinearTransition,
 } from "react-native-reanimated";
 
+import { ProgressBar } from "@/src/components/ProgressBar";
 import { RadioCheckbox } from "@/src/components/RadioCheckbox";
-import { colors, priorityColors, shadow } from "@/src/constants/theme";
+import type { ThemeColors } from "@/src/constants/theme";
+import { priorityColors, shadow } from "@/src/constants/theme";
+import { useTheme } from "@/src/store/theme-context";
 import type { WishItem } from "@/src/types/wish";
 import { formatPrice } from "@/src/utils/format";
 
@@ -23,6 +26,8 @@ export function WishListItem({
   onToggleComplete,
   onPress,
 }: WishListItemProps) {
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const price = formatPrice(item.price);
 
   const openLink = async () => {
@@ -77,58 +82,67 @@ export function WishListItem({
             { backgroundColor: priorityColors[item.priority] },
           ]}
         />
+        {!item.isCompleted && typeof item.progress === "number" ? (
+          <View style={styles.progressRow}>
+            <ProgressBar progress={item.progress} />
+          </View>
+        ) : null}
       </Pressable>
       {price ? <Text style={styles.price}>{price}</Text> : null}
     </Animated.View>
   );
 }
 
-const styles = StyleSheet.create({
-  card: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    marginBottom: 10,
-    gap: 12,
-  },
-  body: {
-    flex: 1,
-    minHeight: 44,
-    justifyContent: "center",
-  },
-  titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: colors.text,
-    flexShrink: 1,
-  },
-  titleDone: {
-    textDecorationLine: "line-through",
-    color: colors.textMuted,
-  },
-  linkButton: {
-    width: 24,
-    height: 24,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  priorityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    marginTop: 6,
-  },
-  price: {
-    fontSize: 15,
-    fontWeight: "700",
-    color: colors.text,
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    card: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: colors.card,
+      borderRadius: 16,
+      paddingVertical: 12,
+      paddingHorizontal: 14,
+      marginBottom: 10,
+      gap: 12,
+    },
+    body: {
+      flex: 1,
+      minHeight: 44,
+      justifyContent: "center",
+    },
+    titleRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 6,
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors.text,
+      flexShrink: 1,
+    },
+    titleDone: {
+      textDecorationLine: "line-through",
+      color: colors.textMuted,
+    },
+    linkButton: {
+      width: 24,
+      height: 24,
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    priorityDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      marginTop: 6,
+    },
+    progressRow: {
+      marginTop: 8,
+    },
+    price: {
+      fontSize: 15,
+      fontWeight: "700",
+      color: colors.text,
+    },
+  });
